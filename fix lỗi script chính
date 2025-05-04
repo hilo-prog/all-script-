@@ -1,0 +1,126 @@
+local function CustomNotification(title, text, duration)
+    -- Tạo GUI cho thông báo
+    local notificationGui = Instance.new("ScreenGui")
+    notificationGui.Name = "CustomNotification_"..tostring(math.random(1, 10000))
+    notificationGui.Parent = game:GetService("CoreGui")
+    notificationGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    
+    -- Tạo khung chính
+    local frame = Instance.new("Frame")
+    frame.Name = "NotificationFrame"
+    frame.Size = UDim2.new(0, 300, 0, 80)
+    frame.Position = UDim2.new(1, -320, 1, 100) -- Bắt đầu từ dưới màn hình
+    frame.AnchorPoint = Vector2.new(1, 1)
+    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    frame.BorderSizePixel = 0
+    frame.Parent = notificationGui
+    
+    -- Thêm viền trắng
+    local border = Instance.new("UIStroke")
+    border.Thickness = 2
+    border.Color = Color3.fromRGB(255, 255, 255)
+    border.Parent = frame
+    
+    -- Bo góc
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = frame
+    
+    -- Tiêu đề
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Text = title
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 16
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.Position = UDim2.new(0, 15, 0, 10)
+    titleLabel.Size = UDim2.new(1, -30, 0, 20)
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Parent = frame
+    
+    -- Nội dung
+    local textLabel = Instance.new("TextLabel")
+    textLabel.Text = text
+    textLabel.Font = Enum.Font.Gotham
+    textLabel.TextSize = 14
+    textLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+    textLabel.BackgroundTransparency = 1
+    textLabel.Position = UDim2.new(0, 15, 0, 35)
+    textLabel.Size = UDim2.new(1, -30, 0, 35)
+    textLabel.TextXAlignment = Enum.TextXAlignment.Left
+    textLabel.TextWrapped = true
+    textLabel.Parent = frame
+    
+    -- Hiệu ứng xuất hiện
+    frame:TweenPosition(UDim2.new(1, -320, 1, -100), "Out", "Quad", 0.3)
+    
+    -- Tự động ẩn sau khoảng thời gian
+    task.delay(duration or 3, function()
+        frame:TweenPosition(UDim2.new(1, -320, 1, 100), "Out", "Quad", 0.3, true, function()
+            notificationGui:Destroy()
+        end)
+    end)
+end
+
+-- UI Gốc
+local ScreenGui = Instance.new("ScreenGui")
+local ImageButton = Instance.new("ImageButton")
+local UICorner = Instance.new("UICorner")
+
+ScreenGui.Name = "SorVN_UI"
+ScreenGui.Parent = game.CoreGui
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+ImageButton.Name = "ToggleButton"
+ImageButton.Parent = ScreenGui
+ImageButton.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+ImageButton.BorderSizePixel = 0
+ImageButton.Position = UDim2.new(0.10615778, 0, 0.16217947, 0)
+ImageButton.Size = UDim2.new(0, 40, 0, 40)
+ImageButton.Draggable = true
+ImageButton.Image = "http://www.roblox.com/asset/?id=132511796893313"
+
+UICorner.CornerRadius = UDim.new(1, 10)
+UICorner.Parent = ImageButton
+
+repeat wait() until game:IsLoaded()
+
+local Fluent
+local success, err = pcall(function()
+    Fluent = loadstring(game:HttpGet("https://github.com/dawid-scripts/Fluent/releases/latest/download/main.lua"))()
+end)
+
+if not success then
+    warn("Lỗi load thư viện Fluent: "..err)
+    game:GetService("StarterGui"):SetCore("SendNotification", {
+        Title = "LỖI";
+        Text = "Không thể load thư viện UI";
+        Duration = 5;
+    })
+    return
+end
+
+local Window = Fluent:CreateWindow({
+    Title = "Normal No More Hub [ BloxFruit ]",
+    SubTitle = "By SorVN",
+    TabWidth = 157,
+    Size = UDim2.fromOffset(550, 400),
+    Acrylic = true,
+    Theme = "Dark",
+    MinimizeKey = Enum.KeyCode.RightControl,
+    
+    OnClose = function()
+        if ImageButton then ImageButton:Destroy() end
+        if ScreenGui then ScreenGui:Destroy() end
+    end
+})
+
+local isMinimized = false
+ImageButton.MouseButton1Click:Connect(function()
+    if isMinimized then
+        Window:Show()
+    else
+        Window:Minimize()
+    end
+    isMinimized = not isMinimized
+end)
